@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+
+	<!-- TouchableNotificationPlugin, ExpandableNotificationPlugin, and LockScreenControlsPlugin don't seem to be working, so disabling and enabling basic NotificationPlugin -->
+    
+    <plugin
+        name="org.prx.playerhater.plugins.NotificationPlugin"
+        enabled="true"
+         />
+    
+    <plugin
+        name="org.prx.playerhater.plugins.TouchableNotificationPlugin"
+        enabled="false"
+        disabled="true" />    
+    
+    <plugin
+        name="org.prx.playerhater.plugins.ExpandableNotificationPlugin"
+        enabled="false"
+        disabled="true" />
+
+    <plugin
+        name="org.prx.playerhater.plugins.LockScreenControlsPlugin"
+        enabled="false"
+        disabled="true" />
+
+	<plugin
+        name="org.prx.playerhater.plugins.AudioFocusPlugin"
+        enabled="true" />
+	
+</config>
