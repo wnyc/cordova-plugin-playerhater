@@ -7,6 +7,7 @@ import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
+import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,9 +23,11 @@ import android.util.Log;
 public class PlayerHaterPlugin extends CordovaPlugin implements OnAudioInterruptListener, OnAudioStateUpdatedListener{
 
 	protected static final String LOG_TAG = "PlayerHaterPlugin";
+  protected static CordovaWebView mCachedWebView = null;
 		
 	protected PhoneHandler mPhoneHandler=null;
 	protected BasicAudioPlayer mAudioPlayer=null;
+  protected CallbackContext connectionCallbackContext;
 	
 	@Override
 	public void initialize(CordovaInterface cordova, CordovaWebView webView) {
@@ -38,6 +41,18 @@ public class PlayerHaterPlugin extends CordovaPlugin implements OnAudioInterrupt
 		if(mAudioPlayer==null){
 			mAudioPlayer=new BasicAudioPlayer(cordova.getActivity().getApplicationContext(), this);
 		}
+
+    this.connectionCallbackContext = null;
+
+    if ( mCachedWebView != null ) {
+      // this is a hack to destroy the old web view if it exists, which happens when audio is playing, the main app activity is 'killed' but the audio keeps playing, and then the app is restarted.
+      // performing the hack here instead of when the app activity is destroyed because the web view continues to function even though the activity is killed, so it will process javascript messages
+      // from the plugin telling it that the track is complete, so it will move to the next track if necessary...
+      Log.d(LOG_TAG, "Found cached web view -- destroying...");
+      String summary = "<html><body>Clear out JS</body></html>";
+      mCachedWebView.loadData(summary, "text/html", null);
+    }
+    mCachedWebView = webView;
 
 		Log.d(LOG_TAG, "PlayerHater Plugin initialized");
 	}
@@ -58,20 +73,40 @@ public class PlayerHaterPlugin extends CordovaPlugin implements OnAudioInterrupt
 	public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
 		boolean ret=true;
 		try {
+
+      //if (this.connectionCallbackContext==null) {
+        this.connectionCallbackContext = callbackContext;
+      //}
+
 			if(action.equalsIgnoreCase("init")){
 				
-				_checkForExistingAudio();
-				callbackContext.success();
-        	
+				JSONObject audio=mAudioPlayer.checkForExistingAudio();
+				//callbackContext.success();
+        if (audio!=null) {
+            JSONObject json=new JSONObject();
+            json.put("type", "current");
+            json.put("audio", audio);
+            PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, json);
+            pluginResult.setKeepCallback(true);
+            callbackContext.sendPluginResult(pluginResult);
+        } else {
+          callbackContext.success();
+        }
+        //    PluginResult pluginResult = new PluginResult(PluginResult.Status.OK);
+        //    pluginResult.setKeepCallback(true);
+        //    callbackContext.sendPluginResult(pluginResult);        	
 			}else if (action.equals("playstream")) {
         		
         		JSONObject stationUrls = args.getJSONObject(0);
         		JSONObject info = args.getJSONObject(1);
         		JSONObject audioJson=null;
         		if ( args.length() > 2 ) { audioJson = args.getJSONObject(2); }
+            this.connectionCallbackContext = callbackContext;
         		ret = _playStream(stationUrls, info, audioJson);
-        		callbackContext.success();
-        	
+        		//callbackContext.success();
+            PluginResult pluginResult = new PluginResult(PluginResult.Status.OK);
+            pluginResult.setKeepCallback(true);
+            callbackContext.sendPluginResult(pluginResult);        	
 			}else if (action.equals("playremotefile")) {
         		
         		String file=args.getString(0);
@@ -80,9 +115,11 @@ public class PlayerHaterPlugin extends CordovaPlugin implements OnAudioInterrupt
         		int position = 0;
         		if ( args.length() > 2 ) { position = args.getInt(2); }
         		if ( args.length() > 3 ) { audioJson = args.getJSONObject(3); }
-				ret = _playRemoteFile(file, info, position, audioJson);
-				callbackContext.success();
-        	
+				    ret = _playRemoteFile(file, info, position, audioJson);
+				    //callbackContext.success();
+            PluginResult pluginResult = new PluginResult(PluginResult.Status.OK);
+            pluginResult.setKeepCallback(true);
+            callbackContext.sendPluginResult(pluginResult);        	
         	}else if (action.equals("playfile")) {
         		
         		String file=new File(args.getString(0)).getName();
@@ -92,51 +129,66 @@ public class PlayerHaterPlugin extends CordovaPlugin implements OnAudioInterrupt
         		if ( args.length() > 2 ) { position = args.getInt(2); }
         		if ( args.length() > 3 ) { audioJson = args.getJSONObject(3); }
         		String directory=_getDirectory(cordova.getActivity().getApplicationContext());
+            file=Utilities.stripArgumentsFromFilename(file);
         		File f = new File(directory + "/" + file);
-    			if(f.exists()){
-    				ret = _playAudioLocal(directory + "/" + file, info, position, audioJson);
-    			} else {
-    				ret = _playRemoteFile(args.getString(0), info, position, audioJson);
-    			}
-    			callbackContext.success();
-			
+    			  if(f.exists()){
+    			  	ret = _playAudioLocal(directory + "/" + file, info, position, audioJson);
+    			  } else {
+    			  	ret = _playRemoteFile(args.getString(0), info, position, audioJson);
+    		  	}
+    			  //callbackContext.success();
+            PluginResult pluginResult = new PluginResult(PluginResult.Status.OK);
+            pluginResult.setKeepCallback(true);
+            callbackContext.sendPluginResult(pluginResult);			
         	}else if (action.equals("pause")) {
         		
-				_pauseAudio();
-				callbackContext.success();
-				
+				    _pauseAudio();
+				    //callbackContext.success();
+				    PluginResult pluginResult = new PluginResult(PluginResult.Status.OK);
+            pluginResult.setKeepCallback(true);
+            callbackContext.sendPluginResult(pluginResult);
         	}else if (action.equals("seek")) {
         		
         		int interval=args.getInt(0);
         		_seekAudio(interval);
-        		callbackContext.success();
-        		
+        		//callbackContext.success();
+        		PluginResult pluginResult = new PluginResult(PluginResult.Status.OK);
+            pluginResult.setKeepCallback(true);
+            callbackContext.sendPluginResult(pluginResult);
         	}else if (action.equals("seekto")) {
         		
         		int pos=args.getInt(0);
         		_seekToAudio(pos);
-        		callbackContext.success();
-        		
-			}else if (action.equals("stop")) {
+        		//callbackContext.success();
+        		PluginResult pluginResult = new PluginResult(PluginResult.Status.OK);
+            pluginResult.setKeepCallback(true);
+            callbackContext.sendPluginResult(pluginResult);
+			    }else if (action.equals("stop")) {
 				
-				_pauseAudio();
-				callbackContext.success();
-			
+				    _pauseAudio();
+				    //callbackContext.success();
+			      PluginResult pluginResult = new PluginResult(PluginResult.Status.OK);
+            pluginResult.setKeepCallback(true);
+            callbackContext.sendPluginResult(pluginResult);
         	}else if (action.equals("setaudioinfo")) {
         		
         		JSONObject info = args.getJSONObject(0);
-				_setAudioInfo(info);
-				callbackContext.success();
-			
-			}else if (action.equals("getaudiostate")) {
+				    _setAudioInfo(info);
+				    //callbackContext.success();
+			      PluginResult pluginResult = new PluginResult(PluginResult.Status.OK);
+            pluginResult.setKeepCallback(true);
+            callbackContext.sendPluginResult(pluginResult);
+			    }else if (action.equals("getaudiostate")) {
 				
-				mAudioPlayer.fireAudioStateUpdated();
-				callbackContext.success();
-				
-			}else{
-				callbackContext.error(LOG_TAG + " error: invalid action (" + action + ")");
-				ret=false;
-			}
+				    mAudioPlayer.fireAudioStateUpdated();
+				    //callbackContext.success();
+				    PluginResult pluginResult = new PluginResult(PluginResult.Status.OK);
+            pluginResult.setKeepCallback(true);
+            callbackContext.sendPluginResult(pluginResult);
+			    }else{
+				    callbackContext.error(LOG_TAG + " error: invalid action (" + action + ")");
+				    ret=false;
+			    }
 		} catch (JSONException e) {
 			callbackContext.error(LOG_TAG + " error: invalid json");
 			ret = false;
@@ -147,12 +199,13 @@ public class PlayerHaterPlugin extends CordovaPlugin implements OnAudioInterrupt
 		return ret;
 	}
 
-	protected void _checkForExistingAudio() throws JSONException{
-		String audioJson = mAudioPlayer.checkForExistingAudio();
-		if (audioJson!=null){
-			this.webView.sendJavascript("NYPRNativeFeatures.prototype.CurrentAudio(" + audioJson + ");");	
-		}
-	}
+	//protected String _checkForExistingAudio() throws JSONException{
+		//String audioJson = mAudioPlayer.checkForExistingAudio();
+		//if (audioJson!=null){
+    //  Log.d(LOG_TAG, "Playing audio detected on startup. Sending to javascript");
+		//	this.webView.sendJavascript("NYPRNativeFeatures.prototype.CurrentAudio(" + audioJson + ");");	
+		//}
+	//}
 	
     protected boolean _playStream(JSONObject stationUrls, JSONObject info, JSONObject audioJson)throws RemoteException, IOException, JSONException{
 		
@@ -303,13 +356,22 @@ public class PlayerHaterPlugin extends CordovaPlugin implements OnAudioInterrupt
 	@Override
 	public void onAudioStateUpdated(STATE state) {		
 		Log.d(LOG_TAG,"onAudioStateUpdated " + state.ordinal() + "; " + state.toString() );
-		
-		if(this.webView!=null){
-			this.webView.sendJavascript("NYPRNativeFeatures.prototype.AudioStatusChanged("+ state.ordinal() + ",'" + state.toString() + "')");
-		}else{
-			Log.d(LOG_TAG,"Web View not loaded -- cannot send Audio Status Update.");
-		}
-		
+    if (this.connectionCallbackContext != null) {
+      JSONObject o=new JSONObject();
+      PluginResult result=null;
+      try {
+        o.put("type", "state");
+        o.put("state", state.ordinal());
+        o.put("description", state.toString());
+        result = new PluginResult(PluginResult.Status.OK, o);
+      } catch (JSONException e){
+        result = new PluginResult(PluginResult.Status.ERROR, e.getMessage());
+      } finally {
+        result.setKeepCallback(true);
+        this.connectionCallbackContext.sendPluginResult(result);
+      }
+    }
+
 		if(state==STATE.MEDIA_STOPPED){
 			onAudioProgressUpdated(0, 0);
 		}
@@ -317,12 +379,40 @@ public class PlayerHaterPlugin extends CordovaPlugin implements OnAudioInterrupt
 	
 	@Override
 	public void onAudioProgressUpdated(int progress, int duration) {
-		this.webView.sendJavascript("NYPRNativeFeatures.prototype.AudioProgress("+ progress + "," + duration + ", -1 )");
+    if (this.connectionCallbackContext != null) {
+      JSONObject o=new JSONObject();
+      PluginResult result=null;
+      try {
+        o.put("type", "progress");
+        o.put("progress", progress);
+        o.put("duration", duration);
+        o.put("available", -1);
+        result = new PluginResult(PluginResult.Status.OK, o);
+      } catch (JSONException e){
+        result = new PluginResult(PluginResult.Status.ERROR, e.getMessage());
+      } finally {
+        result.setKeepCallback(true);
+        this.connectionCallbackContext.sendPluginResult(result);
+      }
+    }
 	}
 	
 	@Override
 	public void onAudioStreamingError(int reason) {
-		this.webView.sendJavascript("NYPRNativeFeatures.prototype.AudioStreamingError(" +  reason + ")");
+    if (this.connectionCallbackContext != null) {
+      JSONObject o=new JSONObject();
+      PluginResult result=null;
+      try {
+        o.put("type", "error");
+        o.put("reason", reason);
+        result = new PluginResult(PluginResult.Status.OK, o);
+      } catch (JSONException e){
+        result = new PluginResult(PluginResult.Status.ERROR, e.getMessage());
+      } finally {
+        result.setKeepCallback(true);
+        this.connectionCallbackContext.sendPluginResult(result);
+      }
+    }
 	}
 	
 	public static String _getDirectory(Context context){

@@ -26,11 +26,6 @@ public class BasicPlayerHaterListenerPlugin extends PlayerHaterListenerPlugin {
 	@Override
 	public void onSongFinished(Song song, int reason) {
 		Log.d(LOG_TAG, "onSongFinished--" + song.getTitle() + "; reason--" + reason + "; state=" +  this.getPlayerHater().getState() + "; Queue Position=" + this.getPlayerHater().getQueuePosition() + "; Queue Length: " + this.getPlayerHater().getQueueLength());
-		// delete all items except the last item
-		int length = this.getPlayerHater().getQueueLength();
-		for(int i=1;i<length;i++) {
-			this.getPlayerHater().removeFromQueue(1);	
-		}	
 		Bundle extra = song.getExtra();
 		if (reason == PlayerHater.FINISH_SONG_END) {
 			if (extra.getBoolean("isStream")) {
@@ -38,10 +33,24 @@ public class BasicPlayerHaterListenerPlugin extends PlayerHaterListenerPlugin {
 				mPlayer.onAudioStreamingError(1); // mp3 streaming error
 				// define error codes when we have more than one code...
 			} else {
+				this.getPlayerHater().emptyQueue();
 				mPlayer.onCompleted();
 			}
+		} else if ( reason == PlayerHater.FINISH_SKIP_BUTTON){
+			// delete all items except the last item
+			int length = this.getPlayerHater().getQueueLength();
+			for(int i=1;i<length;i++) {
+				this.getPlayerHater().removeFromQueue(1);	
+			}	
 		} else if ( reason == PlayerHater.FINISH_ERROR ) {
 			Log.d(LOG_TAG, "Song Finished Via Error--" + song.getUri().toString());
+
+			// delete all items except the last item
+			int length = this.getPlayerHater().getQueueLength();
+			for(int i=1;i<length;i++) {
+				this.getPlayerHater().removeFromQueue(1);	
+			}	
+
 			mPlayer.playerInterrupted();
 			if (extra.getBoolean("isStream")) {
 				mPlayer.onAudioStreamingError(1); // aac streaming error

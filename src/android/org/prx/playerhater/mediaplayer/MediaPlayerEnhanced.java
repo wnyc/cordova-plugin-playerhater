@@ -59,7 +59,7 @@ public class MediaPlayerEnhanced extends MediaPlayer implements PlayerCallback {
 				mIsLoading=true;
 				mStartTime=0;
 				if (mMultiPlayer==null){
-					mMultiPlayer=new MultiPlayer(this, AACPlayer.DEFAULT_AUDIO_BUFFER_CAPACITY_MS * 3, AACPlayer.DEFAULT_DECODE_BUFFER_CAPACITY_MS);
+					mMultiPlayer=new MultiPlayer(this, AACPlayer.DEFAULT_AUDIO_BUFFER_CAPACITY_MS, AACPlayer.DEFAULT_DECODE_BUFFER_CAPACITY_MS);
 				}
 				Log.d(mLogTag, "prepareAsync--playAsync (" + mPath + ")");
 				mMultiPlayer.playAsync(mPath);

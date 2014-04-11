@@ -9,6 +9,7 @@ import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.nypr.cordova.playerhaterplugin.OnAudioStateUpdatedListener;
 import org.nypr.cordova.playerhaterplugin.OnAudioInterruptListener.INTERRUPT_TYPE;
 import org.prx.playerhater.PlayerHater;
 import org.prx.playerhater.PlayerHaterListener;
@@ -47,9 +48,9 @@ public class BasicAudioPlayer implements PlayerHaterListener  {
 	   mHater.setLocalPlugin( new BasicPlayerHaterListenerPlugin( this, this ) );
    }
    
-   public String checkForExistingAudio() throws JSONException{
+   public JSONObject checkForExistingAudio() throws JSONException{
 	   Log.d("LOG_TAG", "On startup, checking service for pre-existing audio..." );
-	   String ret = null;
+     JSONObject json = null;
 	   if( mHater.isPlaying() || mHater.isLoading() ){
 		   Song song = mHater.nowPlaying();
 		   if( song!=null ) {
@@ -57,26 +58,22 @@ public class BasicAudioPlayer implements PlayerHaterListener  {
 			   Bundle playing = song.getExtra();
 			   Log.d(LOG_TAG, "playing/loading:");
 			   String data=playing.getString("audioJson");
-			   JSONObject json = new JSONObject( data );
+			   json = new JSONObject( data );
 			   json.put( "progress", mHater.getCurrentPosition() );
-			   ret = json.toString();
-			   Log.d(LOG_TAG,ret);
 		   }
 	   }
-	   return ret;	  
+	   return json;	  
    }
    
 	@Override
 	public void onStopped() {
 		Log.d(LOG_TAG, "PlayerHater.onStopped");
-		//fireState();
-		fireTransientState(STATE.MEDIA_STOPPED);
-		
+		fireState(STATE.MEDIA_STOPPED); // IPlayerHater does not contain a 'stopped' state -- roll our own
 	}
 	
 	public void onCompleted() {
 		Log.d(LOG_TAG, "PlayerHater.onCompleted");
-		fireTransientState(STATE.MEDIA_COMPLETED);
+		fireState(STATE.MEDIA_COMPLETED); //// IPlayerHater does not contain a 'completed' state, either
 	}
 	
 	@Override
@@ -94,7 +91,7 @@ public class BasicAudioPlayer implements PlayerHaterListener  {
 	@Override
 	public void onLoading(Song song) {
 		Log.d(LOG_TAG, "PlayerHater.onLoading");
-		fireTransientState(STATE.MEDIA_LOADING);
+		fireState();
 	}
 	
 	@Override
@@ -179,7 +176,8 @@ public class BasicAudioPlayer implements PlayerHaterListener  {
 		}
 		
 		// create a Uri object for audio
-		Uri uri = Uri.parse(file);		
+		Uri uri = Uri.parse(file);
+
 		// create a Uri object of artwork
 		Uri artworkUri=null;
 		if ( url != null ) {
@@ -372,12 +370,19 @@ public class BasicAudioPlayer implements PlayerHaterListener  {
 		}
 	}
 	
-	protected void fireState(){
+	protected void fireState(STATE state){
 		if(mListener!=null){
-			STATE state=getState();
 			if(!state.equals(mLastStateFired)){
 				mListener.onAudioStateUpdated(state);
 			}
+			mLastStateFired=state;
+		}
+	}
+	
+	protected void fireState(){
+		if(mListener!=null){
+			STATE state=getState();
+			fireState(state);
 			mLastStateFired=state;
 		}
 	}
