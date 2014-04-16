@@ -46,16 +46,33 @@
     </platform>
 
     <!-- ios -->
-    <!--
     <platform name="ios">
-        <config-file target="config.xml" parent="/*">
-            <feature name="Device">
-                <param name="ios-package" value="CDVDevice"/>
-            </feature>
-        </config-file>
+        <feature name="AudioPlayerPlugin">
+            <param name="ios-package" value="PRXPlayerPlugin" />
+        </feature>
 
-        <header-file src="src/ios/CDVDevice.h" />
-        <source-file src="src/ios/CDVDevice.m" />
+        <header-file src="src/ios/PRXPlayerPlugin.h" />
+        <header-file src="src/ios/AudioStreamHandler.h" />
+        <header-file src="src/ios/PRXPlayer/PRXPlayer.h" />
+        <header-file src="src/ios/PRXPlayer/PRXPlayerQueue.h" />
+        <header-file src="src/ios/PRXPlayer/PRXPlayer_private.h" />
+        <header-file src="src/ios/PRXPlayer/PRXQueuePlayer.h" />
+        <header-file src="src/ios/PRXPlayer/ReachabilityManager.h" />
+        <header-file src="src/ios/PRXPlayerImplementation/NYPROnDemand.h" />
+        <header-file src="src/ios/PRXPlayerImplementation/NYPRPlayer.h" />
+        <header-file src="src/ios/PRXPlayerImplementation/NYPRStream.h" />
+
+        <source-file src="src/ios/PRXPlayerPlugin.m" />
+        <source-file src="src/ios/AudioStreamHandler.m" />
+        <source-file src="src/ios/PRXPlayer/PRXPlayer.m" />
+        <source-file src="src/ios/PRXPlayer/PRXPlayerQueue.m" />
+        <source-file src="src/ios/PRXPlayer/PRXQueuePlayer.m" />
+        <source-file src="src/ios/PRXPlayer/ReachabilityManager.m" />
+        <source-file src="src/ios/PRXPlayerImplementation/NYPROnDemand.m" />
+        <source-file src="src/ios/PRXPlayerImplementation/NYPRPlayer.m" />
+        <source-file src="src/ios/PRXPlayerImplementation/NYPRStream.m" />
+
+        <framework src="MediaPlayer.framework" />
+        <framework src="AudioToolbox.framework" />
     </platform>
-    -->
 </plugin>
