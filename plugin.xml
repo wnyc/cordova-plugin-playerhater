@@ -47,9 +47,12 @@
 
     <!-- ios -->
     <platform name="ios">
-        <feature name="AudioPlayerPlugin">
-            <param name="ios-package" value="PRXPlayerPlugin" />
-        </feature>
+        <config-file target="config.xml" parent="/*">
+            <feature name="AudioPlayerPlugin">
+                <param name="ios-package" value="PRXPlayerPlugin" />
+                <param name="onload" value="true" />
+            </feature>
+        </config-file>
 
         <header-file src="src/ios/PRXPlayerPlugin.h" />
         <header-file src="src/ios/AudioStreamHandler.h" />
