@@ -125,10 +125,11 @@ public class BasicAudioPlayer implements PlayerHaterListener  {
 		mListener.onAudioStreamingError(reason);
 	}
 	
-	protected boolean isPlaying(){
+	public boolean isPlaying(){
 		// use mHater.isPlaying()/mHater.isLoading() -- test to make sure they work
 		
-		return getState().equals(STATE.MEDIA_LOADING) || getState().equals(STATE.MEDIA_RUNNING) || getState().equals(STATE.MEDIA_PAUSED) || getState().equals(STATE.MEDIA_STARTING);
+		//return getState().equals(STATE.MEDIA_LOADING) || getState().equals(STATE.MEDIA_RUNNING) || getState().equals(STATE.MEDIA_PAUSED) || getState().equals(STATE.MEDIA_STARTING);
+		return mHater!=null && (mHater.isPlaying() || mHater.isLoading());
 	}
 	
 	public void setAudioInfo(String title, String artist, String url){
