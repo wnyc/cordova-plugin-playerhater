@@ -32,8 +32,9 @@ public class PlayerHaterPlugin extends CordovaPlugin implements OnAudioInterrupt
 
 	@Override
 	public void initialize(CordovaInterface cordova, CordovaWebView webView) {
+		Log.d(LOG_TAG, "PlayerHater Plugin initialize");
 		super.initialize(cordova, webView);
-
+		
 		if(mPhoneHandler==null){
 			mPhoneHandler=new PhoneHandler(this);
 			mPhoneHandler.startListening(cordova.getActivity().getApplicationContext());
@@ -54,16 +55,25 @@ public class PlayerHaterPlugin extends CordovaPlugin implements OnAudioInterrupt
 			mCachedWebView.loadData(summary, "text/html", null);
 		}
 		mCachedWebView = webView;
-
+				
 		Log.d(LOG_TAG, "PlayerHater Plugin initialized");
 	}
 
 	@Override
+	public void onReset() {
+		Log.d(LOG_TAG, "PlayerHater Plugin onReset");
+		_checkForWakeup(cordova.getActivity().getIntent()); // invoked when the activity is freshly launched...
+		super.onReset();
+	}
+
+	@Override
 	public void onNewIntent(Intent intent) {
-		Log.d(LOG_TAG, "PlayerHater Plugin new intent");
-
+		Log.d(LOG_TAG, "PlayerHater Plugin onNewIntent");
 		super.onNewIntent(intent);
-
+		_checkForWakeup(intent); // invoked when the acctivity is already running...
+	}
+	
+	protected void _checkForWakeup(Intent intent){
 		try {
 			if (intent.getExtras().getBoolean("wakeup", false) && !mAudioPlayer.isPlaying()) {
 				Log.d(LOG_TAG, "wakeup detected");
@@ -95,6 +105,7 @@ public class PlayerHaterPlugin extends CordovaPlugin implements OnAudioInterrupt
 			}
 		}
 	}
+	
 
 	@Override
 	public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
