@@ -15,11 +15,14 @@
 {
     AudioStreamHandler  * mAudioHandler;
     CDVReachability     * mNetworkStatus;
+    
+    NSString * _callbackId;
 }
 
 @property (nonatomic, retain)   AudioStreamHandler   * mAudioHandler;
 @property (nonatomic, retain)   CDVReachability      * mNetworkStatus;
 
+- (void)init:(CDVInvokedUrlCommand*)command;
 - (void)getaudiostate:(CDVInvokedUrlCommand*)command;
 - (void)playstream:(CDVInvokedUrlCommand*)command;
 - (void)playremotefile:(CDVInvokedUrlCommand*)command;
