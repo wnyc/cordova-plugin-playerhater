@@ -56,7 +56,23 @@ void remoteControlReceivedWithEventImp(id self, SEL _cmd, UIEvent * event) {
 
     NSLog (@"PRXPlayer Plugin init");
 
-    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    CDVPluginResult* pluginResult = nil;
+    
+    if ( _audio!=nil) {
+        
+        NSLog(@"sending wakeup audio to js--%@", _audio);
+        
+        NSDictionary * o = @{ @"type" : @"current",
+                              @"audio" : _audio};
+        
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:o];
+        [self _sendPluginResult:pluginResult callbackId:_callbackId];
+        
+        _audio = nil;
+        
+    } else {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    }
     [self _sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
@@ -403,12 +419,33 @@ void remoteControlReceivedWithEventImp(id self, SEL _cmd, UIEvent * event) {
         if (extra!=nil){
             NSDictionary  * streams = [extra objectForKey:@"streams"];
             NSDictionary  * info = [extra objectForKey:@"info"];
+            NSDictionary  * audio = [extra objectForKey:@"audio"];
             NSString* url = nil;
             
             if (streams) {
                 url=[streams objectForKey:@"ios"];
                 if (url!=nil) {
                     [self _playstream:url info:info];
+                    
+                    NSData *data = [NSJSONSerialization dataWithJSONObject:audio options:0 error:&error];
+                    NSString * audioString = nil;
+                    if (data) {
+                        audioString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+                    } else {
+                        NSLog(@"error converting json to string");
+                    }
+                    
+                    if (_callbackId!=nil&&audioString!=nil) {
+                        NSDictionary * o = @{ @"type" : @"current",
+                                              @"audio" : audioString};
+                        
+                        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:o];
+                        [self _sendPluginResult:pluginResult callbackId:_callbackId];
+                        
+                        _audio = nil;
+                    } else {
+                        _audio = audioString; // send this when callback is available
+                    }
                 }
             }
         }
