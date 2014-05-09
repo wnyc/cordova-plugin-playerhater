@@ -60,13 +60,12 @@ void remoteControlReceivedWithEventImp(id self, SEL _cmd, UIEvent * event) {
     
     if ( _audio!=nil) {
         
-        NSLog(@"sending wakeup audio to js--%@", _audio);
+        NSLog(@"sending wakeup audio to js");
         
         NSDictionary * o = @{ @"type" : @"current",
                               @"audio" : _audio};
         
-        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:o];
-        [self _sendPluginResult:pluginResult callbackId:_callbackId];
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:o];
         
         _audio = nil;
         
