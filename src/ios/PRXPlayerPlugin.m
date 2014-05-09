@@ -337,7 +337,16 @@ void remoteControlReceivedWithEventImp(id self, SEL _cmd, UIEvent * event) {
     if ([[notification name] isEqualToString:@"AudioProgressNotification"]){
         
         NSDictionary *dict = [notification userInfo];
-        NSDictionary * o = @{ @"type" : @"progress", @"progress" : [dict  objectForKey:(@"progress")], @"duration" : [dict  objectForKey:(@"duration")],  @"available" : [dict  objectForKey:(@"available")]};
+        
+        int progress = [[dict  objectForKey:(@"progress")] integerValue];
+        int duration = [[dict  objectForKey:(@"duration")] integerValue];
+        int available = [[dict  objectForKey:(@"available")] integerValue];
+        
+        NSDictionary * o = @{ @"type" : @"progress",
+                              @"progress" : [NSNumber numberWithInt:progress] ,
+                              @"duration" : [NSNumber numberWithInt:duration],
+                              @"available" : [NSNumber numberWithInt:available]};
+        
         CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:o];
         [self _sendPluginResult:pluginResult callbackId:_callbackId];
     }
