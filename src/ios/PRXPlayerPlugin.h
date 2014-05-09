@@ -17,7 +17,7 @@
     CDVReachability     * mNetworkStatus;
     
     NSString * _callbackId;
-    NSString * _audio;
+    NSDictionary * _audio;
 }
 
 @property (nonatomic, retain)   AudioStreamHandler   * mAudioHandler;

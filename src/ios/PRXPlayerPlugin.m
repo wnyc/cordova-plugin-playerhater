@@ -427,24 +427,16 @@ void remoteControlReceivedWithEventImp(id self, SEL _cmd, UIEvent * event) {
                 if (url!=nil) {
                     [self _playstream:url info:info];
                     
-                    NSData *data = [NSJSONSerialization dataWithJSONObject:audio options:0 error:&error];
-                    NSString * audioString = nil;
-                    if (data) {
-                        audioString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-                    } else {
-                        NSLog(@"error converting json to string");
-                    }
-                    
-                    if (_callbackId!=nil&&audioString!=nil) {
+                    if (_callbackId!=nil && audio!=nil) {
                         NSDictionary * o = @{ @"type" : @"current",
-                                              @"audio" : audioString};
+                                              @"audio" : audio};
                         
                         CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:o];
                         [self _sendPluginResult:pluginResult callbackId:_callbackId];
                         
                         _audio = nil;
                     } else {
-                        _audio = audioString; // send this when callback is available
+                        _audio = audio; // send this when callback is available
                     }
                 }
             }
