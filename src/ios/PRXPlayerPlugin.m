@@ -75,7 +75,7 @@ void remoteControlReceivedWithEventImp(id self, SEL _cmd, UIEvent * event) {
     [self _sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
-- (void) _createAudioHandler {
+- (void) _create {
     if(self->mAudioHandler==nil){
         NSLog (@"PRXPlayer Plugin creating handler.");
         
@@ -134,37 +134,43 @@ void remoteControlReceivedWithEventImp(id self, SEL _cmd, UIEvent * event) {
     if (_callbackId==nil){
         _callbackId=callbackId;
     }
-    [result setKeepCallbackAsBool:YES]; // keep for later callbacks
-    [self.commandDelegate sendPluginResult:result callbackId:_callbackId];
+    
+    if (_callbackId!=nil){
+        [result setKeepCallbackAsBool:YES]; // keep for later callbacks
+        [self.commandDelegate sendPluginResult:result callbackId:_callbackId];
+    }
 }
 
 #pragma mark Audio playback commands
 
 - (void)playstream:(CDVInvokedUrlCommand*)command
 {
+    CDVPluginResult* pluginResult=nil;
     NSDictionary  * params = [command.arguments  objectAtIndex:0];
-    NSString* stationUrl = [params objectForKey:@"ios"];
+    NSString* url = [params objectForKey:@"ios"];
     NSDictionary  * info = [command.arguments  objectAtIndex:1];
     
-    if ( stationUrl && stationUrl != (id)[NSNull null] ) {
-        [self _playstream:stationUrl info:info];
+    if ( url && url != (id)[NSNull null] ) {
+        [self _playstream:url info:info];
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     } else {
-       NSLog (@"PRXPlayer Plugin invalid stream (%@)", stationUrl);
-        // todo -- handle invalid stream url
+       NSLog (@"PRXPlayer Plugin invalid stream (%@)", url);
+       pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"invalid stream url"];
     }
-    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+
     [self _sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
 - (void)_playstream:(NSString*)url info:(NSDictionary*)info {
     NSLog (@"PRXPlayer Plugin starting stream (%@)", url);
-    [self _createAudioHandler];
+    [self _create];
     [self->mAudioHandler startPlayingStream:url];
     [self setaudioinfoInternal:info];
 }
 
 - (void)playfile:(CDVInvokedUrlCommand*)command
 {
+    CDVPluginResult* pluginResult = nil;
     NSString* fullFilename = [command.arguments objectAtIndex:0];
     NSDictionary  * info = [command.arguments  objectAtIndex:1];
     NSInteger position = 0;
@@ -181,27 +187,29 @@ void remoteControlReceivedWithEventImp(id self, SEL _cmd, UIEvent * event) {
         
         if([[NSFileManager defaultManager] fileExistsAtPath:fullPathAndFile]){
             NSLog (@"PRXPlayer Plugin playing local file (%@)", fullPathAndFile);
-            [self _createAudioHandler];
+            [self _create];
             [self->mAudioHandler startPlayingLocalFile:fullPathAndFile position:position];
             [self setaudioinfoInternal:info];
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         } else {
             [self playremotefile:command];
         }
         
     }else {
         NSLog (@"PRXPlayer Plugin invalid file (%@)", fullFilename);
-        // todo -- handle invalid stream url
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"invalid file url"];
     }
     
-    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-    [self _sendPluginResult:pluginResult callbackId:command.callbackId];
+    if (pluginResult!=nil) {
+        [self _sendPluginResult:pluginResult callbackId:command.callbackId];
+    }
 }
 
 - (void)pause:(CDVInvokedUrlCommand*)command
 {
     
     NSLog (@"PRXPlayer Plugin pausing playback");
-    [self _createAudioHandler];
+    [self _create];
     [self->mAudioHandler pausePlaying];
     
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
@@ -210,6 +218,7 @@ void remoteControlReceivedWithEventImp(id self, SEL _cmd, UIEvent * event) {
 
 - (void)playremotefile:(CDVInvokedUrlCommand*)command
 {
+    CDVPluginResult* pluginResult = nil;
     NSString* url = [command.arguments objectAtIndex:0];
     NSDictionary  * info = [command.arguments  objectAtIndex:1];
     NSInteger position = 0;
@@ -219,16 +228,15 @@ void remoteControlReceivedWithEventImp(id self, SEL _cmd, UIEvent * event) {
     
     if ( url && url != (id)[NSNull null] ) {
         NSLog (@"PRXPlayer Plugin playing remote file (%@)", url);
-        [self _createAudioHandler];
+        [self _create];
         [self->mAudioHandler startPlayingRemoteFile:url position:position];
         [self setaudioinfoInternal:info];
-        
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     } else {
         NSLog (@"PRXPlayer Plugin invalid remote file (%@)", url);
-        // todo -- handle invalid stream url
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"invalid remote file url"];
     }
     
-    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [self _sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
@@ -237,7 +245,7 @@ void remoteControlReceivedWithEventImp(id self, SEL _cmd, UIEvent * event) {
     NSInteger interval = [[command.arguments objectAtIndex:0] integerValue];
     
     NSLog (@"PRXPlayer Plugin seeking to interval (%d)", interval );
-    [self _createAudioHandler];
+    [self _create];
     [self->mAudioHandler seekInterval:interval];
     
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
@@ -249,7 +257,7 @@ void remoteControlReceivedWithEventImp(id self, SEL _cmd, UIEvent * event) {
     NSInteger position = [[command.arguments objectAtIndex:0] integerValue];
     
     NSLog (@"PRXPLayer seeking to position (%d)", position );
-    [self _createAudioHandler];
+    [self _create];
     [self->mAudioHandler seekTo:position];
     
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
@@ -259,7 +267,7 @@ void remoteControlReceivedWithEventImp(id self, SEL _cmd, UIEvent * event) {
 - (void)stop:(CDVInvokedUrlCommand*)command
 {
     NSLog (@"PRXPlayer Plugin stopping playback.");
-    [self _createAudioHandler];
+    [self _create];
     [self->mAudioHandler stopPlaying];
     
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
@@ -300,7 +308,7 @@ void remoteControlReceivedWithEventImp(id self, SEL _cmd, UIEvent * event) {
 {
     NSLog (@"PRXPlayer Plugin getting audio state");
     
-    [self _createAudioHandler];
+    [self _create];
     [self->mAudioHandler getAudioState];
     
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
