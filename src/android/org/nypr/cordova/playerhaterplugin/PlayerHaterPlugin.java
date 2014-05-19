@@ -236,9 +236,11 @@ public class PlayerHaterPlugin extends CordovaPlugin implements OnAudioInterrupt
 				ret=false;
 			}
 		} catch (JSONException e) {
+			e.printStackTrace();
 			callbackContext.error(LOG_TAG + " error: invalid json");
 			ret = false;
 		} catch (Exception e) {
+			e.printStackTrace();
 			callbackContext.error(LOG_TAG + " error: " + e.getMessage());
 			ret = false;
 		}

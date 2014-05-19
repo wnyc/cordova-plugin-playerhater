@@ -240,7 +240,7 @@ public class BasicAudioPlayer implements PlayerHaterListener  {
 					} else {
 						mHater.play(mPlaying);
 					}
-				}else if( song.getUri().equals( mPlaying.getUri() ) && mHater.getState() == IPlayerHater.STATE_PAUSED ){
+				}else if( mPlaying!=null && song.getUri().equals( mPlaying.getUri() ) && mHater.getState() == IPlayerHater.STATE_PAUSED ){
 					// resume audio
 					Log.d(LOG_TAG,"Resuming Playback...");
 					mHater.play();
