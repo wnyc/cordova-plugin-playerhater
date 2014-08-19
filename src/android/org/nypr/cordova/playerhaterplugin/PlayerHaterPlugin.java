@@ -1,12 +1,15 @@
 package org.nypr.cordova.playerhaterplugin;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
-import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
+import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -15,6 +18,7 @@ import org.nypr.cordova.playerhaterplugin.BasicAudioPlayer.STATE;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.net.ConnectivityManager;
 import android.os.Environment;
 import android.os.RemoteException;
@@ -82,7 +86,20 @@ public class PlayerHaterPlugin extends CordovaPlugin implements OnAudioInterrupt
 				JSONObject streams = extra.getJSONObject("streams");
 				JSONObject info = extra.getJSONObject("info");
 				JSONObject audio = extra.getJSONObject("audio");
-				_playStream(streams, info, audio);
+
+				if (this._isConnected()) {
+					_playStream(streams, info, audio);
+				} else{
+					String directory=_getDirectory(cordova.getActivity().getApplicationContext());
+					String fileName = extra.getString("offline_sound");
+					File f= new File(directory + fileName);
+					if (!f.exists()){
+						copyMp3(fileName);
+					}
+					info.put("title", "Q2 Default Wakeup Music");
+					info.put("artist", "WQXR");
+					_playAudioLocal(directory + fileName, info, 0, audio);
+				}
 
 				if (connectionCallbackContext!=null){
 					JSONObject json=new JSONObject();
@@ -106,6 +123,34 @@ public class PlayerHaterPlugin extends CordovaPlugin implements OnAudioInterrupt
 		}
 	}
 	
+	private void copyMp3(String mp3ToCopy){
+
+		// Open your mp3 file as the input stream
+		try {
+			InputStream myInput;
+			AssetManager assetManager = cordova.getActivity().getApplicationContext().getAssets();
+			myInput = assetManager.open(mp3ToCopy);
+			
+			// Path to the output file on the device
+			String outFileName = _getDirectory(cordova.getActivity().getApplicationContext()) + mp3ToCopy;
+			OutputStream myOutput = new FileOutputStream(outFileName);
+
+			//transfer bytes from the inputfile to the outputfile
+			byte[] buffer = new byte[1024];
+			int length;
+			while ((length = myInput.read(buffer))>0 ){
+			   myOutput.write(buffer, 0, length);
+			}
+
+			//Close the streams => Better to have it in *final* block
+			myOutput.flush();
+			myOutput.close();
+			myInput.close();
+		} catch (IOException e) {
+			Log.e(LOG_TAG, "Error Message:" + e.getMessage());
+		}
+
+	}
 
 	@Override
 	public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
