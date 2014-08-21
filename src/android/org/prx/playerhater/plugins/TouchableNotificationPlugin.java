@@ -149,7 +149,7 @@ public class TouchableNotificationPlugin extends NotificationPlugin {
 
 	protected RemoteViews buildNotificationView() {
 		return new RemoteViews(getContext().getPackageName(),
-				R.layout.zzz_ph_hc_notification);
+				R.layout.nypr_ph_hc_notification);
 	}
 
 	private PendingIntent getMediaButtonPendingIntent(int keycode) {

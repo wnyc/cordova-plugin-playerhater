@@ -5,13 +5,14 @@
     
     <plugin
         name="org.prx.playerhater.plugins.NotificationPlugin"
-        enabled="true"
+        enabled="false"
          />
     
     <plugin
         name="org.prx.playerhater.plugins.TouchableNotificationPlugin"
-        enabled="false"
-        disabled="true" />    
+        enabled="true"
+        disabled="false"
+        prebind="true" />    
     
     <plugin
         name="org.prx.playerhater.plugins.ExpandableNotificationPlugin"
