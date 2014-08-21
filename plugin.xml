@@ -38,7 +38,7 @@
           </receiver>
         </config-file>
  
-	<source-file src="res/layout-v11/nypr_ph_hc_notification.xml" target-dir="res/layout-v11" />
+	<source-file src="res/android/layout-v11/nypr_ph_hc_notification.xml" target-dir="res/layout-v11" />
         <source-file src="src/android/org/nypr/cordova/playerhaterplugin" target-dir="src/org/nypr/cordova" />
         <source-file src="src/android/org/prx/playerhater" target-dir="src/org/prx" />
         <resource-file src="res/android/" target="res" />
