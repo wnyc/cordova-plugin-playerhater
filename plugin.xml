@@ -10,6 +10,10 @@
     <keywords>audio,stream,radio</keywords>
     <repo>git@git.wnyc.net:mobile/cordova/cordova-plugin-playerhater.git</repo>
 
+    <js-module src="www/audioplayer.js" name="AudioPlayer"> 
+      <clobbers target="audioplayer"/> 
+    </js-module> 
+
     <!-- android -->
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/*">
