@@ -6,7 +6,7 @@ This plugin supports PhoneGap/Cordova apps running on both iOS and Android.
 
 ### Version Requirements
 
-This plugin is meant to work with Cordova 3.5.0+ and the VLC library for iOS.
+This plugin is meant to work with Cordova 3.5.0+ and PlayerHater (Android)/PRXPlayer (iOS).
 
 PlayerHater references:
 [website]https://github.com/PRX/PlayerHater
@@ -15,7 +15,7 @@ PlayerHater references:
 ## Installation
 
 #### Automatic Installation using PhoneGap/Cordova CLI (iOS and Android)
-1. For iOS, make sure you update your projects to Cordova iOS version 3.5.0+ before installing this plugin.
+1. Make sure you update your projects to Cordova iOS version 3.5.0+ before installing this plugin.
 
         cordova platform update ios
         cordova platform update android
