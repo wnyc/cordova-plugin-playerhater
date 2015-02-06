@@ -335,6 +335,7 @@ public abstract class PlayerHaterService extends Service implements
 			break;
 		case KeyEvent.KEYCODE_MEDIA_STOP:
 			stop();
+			android.os.Process.killProcess(android.os.Process.myPid());
 			break;
 		case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
 			skipBack();
