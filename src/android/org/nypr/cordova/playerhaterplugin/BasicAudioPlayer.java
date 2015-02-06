@@ -319,11 +319,9 @@ public class BasicAudioPlayer implements PlayerHaterListener  {
 	public void stopPlaying(){
 		Log.d(LOG_TAG,"Stopping Stream");
 		if(mHater!=null){
-			if( mHater.isPlaying() ) {
-				mHater.skip();
+			if( mHater.isPlaying() || mHater.getState() == IPlayerHater.STATE_PAUSED) {
+				mHater.stop();
 			}
-			mHater.emptyQueue();
-			mHater.stop();
 		}
 		mPlaying=null;
 		// clear interrupts

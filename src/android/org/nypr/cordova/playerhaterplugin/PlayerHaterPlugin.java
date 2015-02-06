@@ -258,6 +258,14 @@ public class PlayerHaterPlugin extends CordovaPlugin implements OnAudioInterrupt
 				PluginResult pluginResult = new PluginResult(PluginResult.Status.OK);
 				pluginResult.setKeepCallback(true);
 				callbackContext.sendPluginResult(pluginResult);
+			
+			}else if (action.equals("hardStop")) {
+
+				_stopAudio();
+
+				PluginResult pluginResult = new PluginResult(PluginResult.Status.OK);
+				pluginResult.setKeepCallback(true);
+				callbackContext.sendPluginResult(pluginResult);
 				
 			}else if (action.equals("setaudioinfo")) {
 

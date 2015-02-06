@@ -29,6 +29,10 @@ AudioPlayer.prototype.stop = function(success, error) {
   exec(success, error, "AudioPlayerPlugin", "stop", []);
 };
 
+AudioPlayer.prototype.hardStop = function(success, error) {
+  exec(success, error, "AudioPlayerPlugin", "hardStop", []);
+};
+
 AudioPlayer.prototype.setaudioinfo = function(success, error, json) {
   exec(success, error, "AudioPlayerPlugin", "setaudioinfo", json);
 };
