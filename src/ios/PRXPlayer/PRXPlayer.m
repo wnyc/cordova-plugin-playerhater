@@ -406,6 +406,8 @@ static PRXPlayer* sharedPlayerInstance;
     holdPlayback = YES;
   
     _currentPlayable = nil;
+    [self stopObservingPlayer:self.player];
+    [self stopObservingPlayerItem:self.currentPlayerItem];
   
     _currentPlayerItem = nil;
     _currentURLAsset = nil;
@@ -640,7 +642,11 @@ static PRXPlayer* sharedPlayerInstance;
 
 - (void) stopObservingPlayerItem:(AVPlayerItem*)playerItem {
     [playerItem removeObserver:self forKeyPath:@"status"];
+    [playerItem removeObserver:self forKeyPath:@"playbackBufferEmpty"];
     
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:AVPlayerItemDidPlayToEndTimeNotification
+                                                  object:playerItem];
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:AVPlayerItemDidPlayToEndTimeNotification
                                                   object:playerItem];

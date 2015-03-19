@@ -74,6 +74,7 @@
         <header-file src="src/ios/PRXPlayerImplementation/NYPROnDemand.h" />
         <header-file src="src/ios/PRXPlayerImplementation/NYPRPlayer.h" />
         <header-file src="src/ios/PRXPlayerImplementation/NYPRStream.h" />
+        <header-file src="src/ios/Reachability/Reachability.h" />
 
         <source-file src="src/ios/PRXPlayerPlugin.m" />
         <source-file src="src/ios/AudioStreamHandler.m" />
@@ -84,6 +85,7 @@
         <source-file src="src/ios/PRXPlayerImplementation/NYPROnDemand.m" />
         <source-file src="src/ios/PRXPlayerImplementation/NYPRPlayer.m" />
         <source-file src="src/ios/PRXPlayerImplementation/NYPRStream.m" />
+        <source-file src="src/ios/Reachability/Reachability.m" />
 
         <framework src="MediaPlayer.framework" />
         <framework src="AudioToolbox.framework" />
