@@ -22,7 +22,7 @@ https://github.com/PRX/PRXPlayer
 
 2. Install this plugin using PhoneGap/Cordova cli:
 
-        cordova local plugin add https://github.com/wnyc/cordova-plugin-playerhater.git
+        cordova plugin add https://github.com/wnyc/cordova-plugin-playerhater.git
 
 ## Usage
 
