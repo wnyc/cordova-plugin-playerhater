@@ -188,10 +188,16 @@ void remoteControlReceivedWithEventImp(id self, SEL _cmd, UIEvent * event) {
         NSURL *fullPathURL = [NSURL URLWithString:fullFilename];
         NSString *fullPathString = [fullPathURL path];
 
-        if([[NSFileManager defaultManager] fileExistsAtPath:fullPathAndFile] || [[NSFileManager defaultManager] fileExistsAtPath:fullPathString]){
+        if([[NSFileManager defaultManager] fileExistsAtPath:fullPathAndFile]){
             NSLog (@"PRXPlayer Plugin playing local file (%@)", fullPathAndFile);
             [self _create];
             [self->mAudioHandler startPlayingLocalFile:fullPathAndFile position:position];
+            [self setaudioinfoInternal:info];
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        } else if([[NSFileManager defaultManager] fileExistsAtPath:fullPathString]) {
+            NSLog (@"PRXPlayer Plugin playing local file (%@)", fullPathString);
+            [self _create];
+            [self->mAudioHandler startPlayingLocalFile:fullPathString position:position];
             [self setaudioinfoInternal:info];
             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         } else {
