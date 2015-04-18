@@ -16,7 +16,7 @@
 package org.prx.playerhater.plugins;
 
 import org.prx.playerhater.BroadcastReceiver;
-import io.cordova.hellocordova.R;
+import player.wikitroop.wikiseda.R;
 import org.prx.playerhater.Song;
 import android.annotation.TargetApi;
 import android.app.Activity;

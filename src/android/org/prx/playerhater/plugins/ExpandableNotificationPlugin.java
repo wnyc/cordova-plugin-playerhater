@@ -15,7 +15,7 @@
  ******************************************************************************/
 package org.prx.playerhater.plugins;
 
-import io.cordova.hellocordova.R;
+import player.wikitroop.wikiseda.R;
 import android.annotation.TargetApi;
 import android.app.Notification;
 import android.net.Uri;

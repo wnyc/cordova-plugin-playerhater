@@ -29,7 +29,7 @@ public class Receiver extends BroadcastReceiver implements
 		RemoteControlButtonReceiver {
 
 	private static final HeadphoneButtonGestureHelper sGestureHelper = new HeadphoneButtonGestureHelper();
-	public static final String REMOTE_CONTROL_BUTTON = "io.cordova.hellocordova.REMOTE_CONTROL";
+	public static final String REMOTE_CONTROL_BUTTON = "player.wikitroop.wikiseda.REMOTE_CONTROL";
 
 	public Receiver() {
 		super();

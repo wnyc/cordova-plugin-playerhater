@@ -15,7 +15,7 @@
  ******************************************************************************/
 package org.prx.playerhater.util;
 
-import io.cordova.hellocordova.BuildConfig;
+import player.wikitroop.wikiseda.BuildConfig;
 
 public class Log {
 
