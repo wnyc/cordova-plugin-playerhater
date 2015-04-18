@@ -24,6 +24,11 @@ https://github.com/PRX/PRXPlayer
 
         cordova local plugin add https://github.com/wnyc/cordova-plugin-playerhater.git
 
+3. For android you should change all packages with suffix `.R` and `.BuildConfig`, watch my commit here
+
+https://github.com/pouriaMaleki/cordova-plugin-playerhater/commit/c33862e3b078e6c4dff5b344308c06dab73bd798
+
+
 ## Usage
 
     // all responses from the audio player are channeled through successCallback and errorCallback
@@ -37,7 +42,7 @@ https://github.com/PRX/PRXPlayer
                                    // stream urls to play on android/ios
                                    {
                                      android: "http://fm939.wnyc.org/wnycfm-app.aac",
-                                     ios: "http://fm939.wnyc.org/wnycfm-app.aac"}
+                                     ios: "http://fm939.wnyc.org/wnycfm-app.aac"
                                    },
                                    // metadata used for iOS lock screen, Android 'Now Playing' notification
                                    {
