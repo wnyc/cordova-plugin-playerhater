@@ -219,7 +219,7 @@ public class PlayerHaterPlugin extends CordovaPlugin implements OnAudioInterrupt
 				if(f.exists()){
 					ret = _playAudioLocal(directory + "/" + file, info, position, audioJson);
 				} else {
-					ret = _playRemoteFile(args.getString(0), info, position, audioJson);
+					ret = _playAudioLocal(args.getString(0), info, position, audioJson);
 				}
 
 				PluginResult pluginResult = new PluginResult(PluginResult.Status.OK);
