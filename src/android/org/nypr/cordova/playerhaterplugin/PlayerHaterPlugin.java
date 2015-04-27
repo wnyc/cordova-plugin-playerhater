@@ -309,7 +309,7 @@ public class PlayerHaterPlugin extends CordovaPlugin implements OnAudioInterrupt
 		String imageUrl = null;
 		boolean ret = false;
 
-		if (this._isConnected()) {
+		if (url.startsWith("file://") || this._isConnected()) {
 
 			if(info!=null && info.has("name")){ title = info.getString("name");}
 			if(info!=null && info.has("description")){ artist = info.getString("description");}
