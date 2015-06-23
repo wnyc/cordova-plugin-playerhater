@@ -28,6 +28,10 @@
     return self;
 }
 
+- (void)dealloc  {
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:kReachabilityChangedNotification object:nil];
+}
+
 - (void) reachabilityDidChange:(NSNotification *)notification {
     NSLog(@"reachabilityDidChange!");
     
