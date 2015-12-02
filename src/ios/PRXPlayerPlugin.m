@@ -131,10 +131,10 @@ void remoteControlReceivedWithEventImp(id self, SEL _cmd, UIEvent * event) {
 #pragma mark Plugin handler
 
 -(void)_sendPluginResult:(CDVPluginResult*)result callbackId:(NSString*)callbackId{
-    if (_callbackId==nil){
+    if(callbackId!=nil){
         _callbackId=callbackId;
     }
-    
+	
     if (_callbackId!=nil){
         [result setKeepCallbackAsBool:YES]; // keep for later callbacks
         [self.commandDelegate sendPluginResult:result callbackId:_callbackId];

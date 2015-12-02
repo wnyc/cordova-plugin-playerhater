@@ -56,7 +56,7 @@ typedef NSUInteger NYPRExtraMediaStates;
 
 - (BOOL)startPlayingRemoteFile:(NSString*)file position:(int)position{
     BOOL ret=TRUE;
-    if([mNetworkStatus currentReachabilityStatus] != NotReachable){
+    if([file hasPrefix:@"file:///"] || [mNetworkStatus currentReachabilityStatus] != NotReachable){
         [self startPlayingInternal:file isRemote:YES position:position];
     }else{
         NSLog(@"Network not reachable -- aborting launch remote file.");
